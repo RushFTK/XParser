@@ -1,12 +1,12 @@
 import scrapy
 
 class testspider(scrapy.Spider):
-    name = 'testwebsite'
+    name = 'test'
     start_urls = ['http://tester1.409dostastudio.work/']
 
     def parse(self, response):
-        for title in response.css('h2.entry-title'):
-            yield {'title': title.css('a ::text').extract_first()}
-
-        for next_page in response.css('div.prev-post > a'):
-            yield response.follow(next_page, self.parse)
+        page = response.url.split("/")[-2]
+        filename = 'test-%s.html' % page
+        with open(filename, 'wb') as f:
+            f.write(responsebody)
+        self.log('Saved file %s' % filename)
