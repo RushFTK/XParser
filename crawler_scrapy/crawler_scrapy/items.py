@@ -12,3 +12,7 @@ class CrawlerScrapyItem(scrapy.Item):
     # define the fields for your item here like:
     # name = scrapy.Field()
     pass
+
+class injured_item(scrapy.Item):
+    target_url = scrapy.Field()
+    type = scrapy.Field()

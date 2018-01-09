@@ -6,4 +6,5 @@ goto exec_scrapy
 cd crawler_scrapy
 :exec_scrapy
 scrapy crawl test
+:scrapy crawl quotes
 
