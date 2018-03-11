@@ -1,25 +1,47 @@
 import scrapy
-from scrapy.selector import Selector
-from scrapy.http import Request
+
 class testspider(scrapy.Spider):
     name = "test"
     start_urls = ['http://tester1.409dostastudio.work/'
-                  ]
-                  # ,'http://tester2.409dostastudio.work/']
+                  # ]
+                  ,'http://tester2.409dostastudio.work/']
+    url_lists = []
 
     def parse(self, response):
+        ifnonewurls = 1
+        testspider.url_lists.append(response.url)
         #get all request page
         urls = response.xpath('//@href').extract()
         for path_url in urls:
-             self.log('Get url - %s' % path_url)
-             yield Request(response.url + path_url.split[1], callback=self.parseContent)
+            if len(path_url.split('/'))> 1:
+                url_dirs = path_url.split('/')[1:]
+                real_url = response.url
+                for index in range(len(url_dirs)):
+                    real_url += url_dirs[index]
+                    if index != (len(url_dirs)-1):
+                        real_url += '/'
+                    if (index == (len(url_dirs)-1)) and (len(url_dirs[index].split('.'))<=1):
+                        real_url += '/'
+                self.log('Get url - %s' % real_url)
+                if not real_url in testspider.url_lists:
+                    ifnonewurls = 0
+                    yield scrapy.Request(response.urljoin(real_url))
 
-        #save pages
-        page = response.url
-        filename = 'test-%s.html' % page
-        with open(filename, 'wb') as f:
-            f.write(response.body)
-        self.log('Saved file %s' % filename)
+        #confirm saved page title
+        # page_name = response.url
+        # if (page_name.split('/')[-1]) is not "":
+        #     filename = 'test-%s-%s.html' % (page_name.split('/')[-3] , page_name.split('/')[-1])
+        # else:
+        #     filename = 'test-%s.html' % page_name.split('/')[-2]
+
+        #confirm saved url
+
+        if ifnonewurls:
+            with open('url_list.txt', 'w') as f:
+                for urls in testspider.url_lists:
+                    f.write(urls + '\n')
+                f.close()
+            self.log('Saved url_list')
 
     #get context
     def parseContent(self, response):
